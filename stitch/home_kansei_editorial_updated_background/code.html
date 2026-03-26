@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KANSEI — Editorial Intelligence</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,300;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <!-- GSAP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+  <style>
+    /* ══════════════════════════════════════════════════
+       KANSEI DESIGN SYSTEM — MOODBOARD V2
+       ══════════════════════════════════════════════════ */
+    :root {
+      --ink:        #181617;
+      --crimson:    #9A031E;
+      --sky:        #44A7D6;
+      --mid-grey:   #ADADAD;
+      --light-grey: #FFFFFF;
+      --white:      #FFFFFF;
+      --paper:      #FFFFFF;
+    }
+
+    /* ══ BASE ══════════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--paper);
+      color: var(--ink);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+    ::selection { background: var(--crimson); color: var(--white); }
+
+    /* ══ NAVBAR ════════════════════════════════════════ */
+    #navbar {
+      position: fixed;
+      top: 1.25rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.7rem 1.6rem;
+      width: calc(100% - 2.5rem);
+      max-width: 56rem;
+      background: transparent;
+      border: 1px solid transparent;
+      transition: background 0.45s ease, border-color 0.45s ease, backdrop-filter 0.45s ease;
+    }
+    #navbar.scrolled {
+      background: rgba(250, 248, 245, 0.88);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-color: rgba(173, 173, 173, 0.5);
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .nav-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--crimson);
+      flex-shrink: 0;
+      animation: pulse-dot 2.5s ease-in-out infinite;
+    }
+    @keyframes pulse-dot {
+      0%,100% { opacity: 1; transform: scale(1); }
+      50%      { opacity: 0.4; transform: scale(0.75); }
+    }
+    .nav-logo {
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 700;
+      font-size: 0.95rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--white);
+      text-decoration: none;
+      transition: color 0.35s ease;
+    }
+    #navbar.scrolled .nav-logo { color: var(--ink); }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+    }
+    .nav-link {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.6rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: rgba(250, 248, 245, 0.65);
+      text-decoration: none;
+      position: relative;
+      transition: color 0.3s ease;
+    }
+    #navbar.scrolled .nav-link { color: var(--mid-grey); }
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: -2px; left: 0;
+      width: 0; height: 1px;
+      background: var(--crimson);
+      transition: width 0.3s ease;
+    }
+    .nav-link:hover { color: var(--ink) !important; }
+    .nav-link:hover::after { width: 100%; }
+
+    .nav-hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      padding: 4px;
+    }
+    .nav-hamburger span {
+      display: block; width: 20px; height: 1px;
+      background: var(--white); transition: background 0.35s ease;
+    }
+    #navbar.scrolled .nav-hamburger span { background: var(--ink); }
+
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .nav-hamburger { display: flex; }
+    }
+
+    /* ══ HERO ══════════════════════════════════════════ */
+    #hero {
+      height: 100dvh;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: flex-end;
+    }
+    .hero-bg {
+      position: absolute; inset: 0;
+      background-image: url('https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=1920&q=80');
+      background-size: cover;
+      background-position: center 40%;
+      transform: scale(1.03);
+    }
+    .hero-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top,
+        var(--ink) 0%,
+        rgba(24,22,23,0.75) 45%,
+        rgba(24,22,23,0.2) 100%
+      );
+    }
+    .hero-content {
+      position: relative;
+      z-index: 10;
+      padding: clamp(2rem, 4vw, 4rem) clamp(1.5rem, 5vw, 3.5rem);
+      width: 100%;
+      max-width: 1100px;
+    }
+    .hero-issue {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.65rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.25em;
+      color: rgba(250,248,245,0.5);
+      margin-bottom: 0.9rem;
+      display: block;
+    }
+    .hero-title-eyebrow {
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 700;
+      font-size: clamp(0.85rem, 1.5vw, 1.05rem);
+      text-transform: uppercase;
+      letter-spacing: 0.22em;
+      color: rgba(250,248,245,0.8);
+      display: block;
+      margin-bottom: 0.2rem;
+    }
+    .hero-title-main {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      font-style: italic;
+      font-size: clamp(4.5rem, 11vw, 7.5rem);
+      line-height: 0.88;
+      color: var(--paper);
+      display: block;
+    }
+    .hero-meta {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.6rem;
+      font-weight: 400;
+      color: rgba(250,248,245,0.4);
+      letter-spacing: 0.12em;
+      margin-top: 2rem;
+      display: block;
+    }
+    .hero-scroll {
+      margin-top: 2rem;
+      display: inline-block;
+      color: rgba(250,248,245,0.35);
+      animation: bounce-y 2.2s ease-in-out infinite;
+    }
+    @keyframes bounce-y {
+      0%,100% { transform: translateY(0); }
+      50%      { transform: translateY(9px); }
+    }
+
+    /* ══ STICKY CARDS ══════════════════════════════════ */
+    #aperture { position: relative; }
+
+    .sticky-card {
+      position: sticky;
+      top: 0;
+      height: 100dvh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      will-change: transform, filter, opacity;
+      transform-origin: top center;
+    }
+    .sticky-card[data-layer="ai"]    { background: var(--light-grey); }
+    .sticky-card[data-layer="human"] { background: var(--paper); }
+    .sticky-card:nth-child(1) { z-index: 1; }
+    .sticky-card:nth-child(2) { z-index: 2; }
+    .sticky-card:nth-child(3) { z-index: 3; }
+    .sticky-card:nth-child(4) { z-index: 4; }
+
+    .card-inner {
+      position: relative;
+      width: 100%;
+      max-width: 820px;
+      padding: clamp(2rem, 5vw, 4rem);
+      text-align: center;
+    }
+    .card-num-ornament {
+      position: absolute;
+      top: -3rem; right: -1rem;
+      font-family: 'IBM Plex Mono', monospace;
+      font-weight: 500;
+      font-size: clamp(7rem, 17vw, 15rem);
+      line-height: 1;
+      color: var(--ink);
+      opacity: 0.055;
+      pointer-events: none;
+      user-select: none;
+      letter-spacing: -0.05em;
+    }
+    .card-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.58rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      margin-bottom: 2.5rem;
+    }
+    .badge-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .sticky-card[data-layer="ai"]    .badge-dot { background: var(--crimson); }
+    .sticky-card[data-layer="human"] .badge-dot { background: var(--sky); }
+    .sticky-card[data-layer="ai"]    .card-badge { color: var(--mid-grey); }
+    .sticky-card[data-layer="human"] .card-badge { color: var(--mid-grey); }
+
+    .card-author {
+      display: block;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.6rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      margin-bottom: 0.9rem;
+    }
+    .sticky-card[data-layer="ai"]    .card-author { color: var(--mid-grey); }
+    .sticky-card[data-layer="human"] .card-author { color: var(--mid-grey); }
+
+    .card-title {
+      line-height: 1.03;
+      margin-bottom: 1.4rem;
+    }
+    .sticky-card[data-layer="ai"] .card-title {
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 700;
+      font-size: clamp(2.4rem, 5.5vw, 4.2rem);
+      letter-spacing: -0.025em;
+      color: var(--ink);
+    }
+    .sticky-card[data-layer="human"] .card-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 600;
+      font-style: normal;
+      font-size: clamp(2.8rem, 6vw, 4.8rem);
+      letter-spacing: -0.01em;
+      color: var(--ink);
+    }
+    .card-desc {
+      margin-bottom: 2.5rem;
+      max-width: 540px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .sticky-card[data-layer="ai"] .card-desc {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1rem;
+      line-height: 1.65;
+      color: var(--mid-grey);
+    }
+    .sticky-card[data-layer="human"] .card-desc {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.2rem;
+      line-height: 1.7;
+      color: var(--mid-grey);
+    }
+    .card-rule {
+      border: none;
+      height: 1px;
+      max-width: 320px;
+      margin: 0 auto 2rem;
+    }
+    .sticky-card[data-layer="ai"]    .card-rule { background: var(--mid-grey); }
+    .sticky-card[data-layer="human"] .card-rule { background: var(--mid-grey); }
+
+    .card-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.62rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--ink);
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+    .sticky-card[data-layer="ai"] .card-cta:hover { color: var(--crimson); }
+    .sticky-card[data-layer="human"] .card-cta:hover { color: var(--sky); }
+
+    /* ══ GRID SOMMARIO ═════════════════════════════════ */
+    #sommario {
+      padding: 0 0 6rem;
+    }
+    .sommario-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 5rem 3rem 0;
+    }
+    .section-header {
+      border-top: 1px solid var(--mid-grey);
+      padding-top: 1.75rem;
+      margin-bottom: 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .section-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.6rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.22em;
+      color: var(--mid-grey);
+    }
+    .articles-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: var(--mid-grey);
+    }
+
+    .article-card {
+      background: var(--white);
+      padding: 2.75rem;
+      position: relative;
+      cursor: default;
+      transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  background 0.3s ease;
+    }
+    .article-card:hover { transform: translateY(-2px); }
+    .article-card[data-layer="ai"] {
+      border-left: 2px solid var(--crimson);
+      background: var(--white);
+    }
+    .article-card[data-layer="ai"]:hover { background: var(--light-grey); }
+    .article-card[data-layer="human"] {
+      border-left: 2px solid var(--sky);
+      background: var(--paper);
+    }
+    .article-card[data-layer="human"]:hover { background: var(--light-grey); }
+
+    .article-num {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.58rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      margin-bottom: 0.65rem;
+      display: block;
+      color: var(--mid-grey);
+    }
+
+    .article-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.55rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      margin-bottom: 1.25rem;
+      color: var(--mid-grey);
+    }
+    .article-badge .badge-dot { width: 4px; height: 4px; border-radius: 50%; }
+    .article-card[data-layer="ai"]    .article-badge .badge-dot { background: var(--crimson); }
+    .article-card[data-layer="human"] .article-badge .badge-dot { background: var(--sky); }
+
+    .article-author {
+      display: block;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.58rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      margin-bottom: 0.55rem;
+      color: var(--mid-grey);
+    }
+
+    .article-rule {
+      border: none;
+      height: 1px;
+      margin: 1.25rem 0;
+      background: var(--mid-grey);
+    }
+    .article-card[data-layer="human"] .article-rule { background: var(--mid-grey); }
+
+    .article-title {
+      line-height: 1.08;
+      margin-bottom: 1rem;
+    }
+    .article-card[data-layer="ai"] .article-title {
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 700;
+      font-size: clamp(1.35rem, 2.5vw, 1.75rem);
+      letter-spacing: -0.025em;
+      color: var(--ink);
+    }
+    .article-card[data-layer="human"] .article-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 600;
+      font-size: clamp(1.55rem, 2.5vw, 2rem);
+      letter-spacing: -0.01em;
+      color: var(--ink);
+    }
+    .article-desc {
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .article-card[data-layer="ai"] .article-desc {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.875rem;
+      line-height: 1.65;
+      color: var(--mid-grey);
+    }
+    .article-card[data-layer="human"] .article-desc {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.05rem;
+      line-height: 1.7;
+      color: var(--mid-grey);
+    }
+
+    /* ══ QUOTE ═════════════════════════════════════════ */
+    #manifesto {
+      background: var(--ink);
+      padding: 9rem 2rem;
+    }
+    .manifesto-inner {
+      max-width: 48rem;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .manifesto-neutral {
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 400;
+      font-size: 0.8rem;
+      color: var(--mid-grey);
+      letter-spacing: 0.03em;
+      margin-bottom: 2.75rem;
+      line-height: 1.8;
+    }
+    .manifesto-dramatic {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      font-style: italic;
+      font-size: clamp(2rem, 4.5vw, 3.4rem);
+      line-height: 1.3;
+      color: var(--paper);
+      margin-bottom: 3.5rem;
+    }
+    .manifesto-word { display: inline; }
+    .manifesto-highlight { color: var(--crimson); }
+    .manifesto-num {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.6rem;
+      font-weight: 400;
+      text-transform: uppercase;
+      letter-spacing: 0.25em;
+      color: var(--mid-grey);
+    }
+
+    /* ══ FOOTER ════════════════════════════════════════ */
+    footer {
+      background: var(--ink);
+      border-top: 1px solid #2a2728;
+      padding: 5rem 3rem 3rem;
+    }
+    .footer-grid {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 2fr 1fr 1.2fr 1fr;
+      gap: 3rem;
+      padding-bottom: 3rem;
+    }
+    .footer-logo-text {
+      display: block;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 700;
+      font-size: 1.4rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--paper);
+      margin-bottom: 0.25rem;
+    }
+    .footer-logo-kanji {
+      display: block;
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 1.1rem;
+      color: var(--mid-grey);
+      margin-bottom: 1rem;
+    }
+    .footer-tagline {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.58rem;
+      color: var(--mid-grey);
+      letter-spacing: 0.06em;
+      line-height: 1.6;
+    }
+    .footer-status {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      margin-top: 1.5rem;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.52rem;
+      color: var(--mid-grey);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    .footer-heading {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.55rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.22em;
+      color: var(--mid-grey);
+      margin-bottom: 1.5rem;
+    }
+    .footer-link {
+      display: block;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.62rem;
+      color: rgba(250,248,245,0.4);
+      text-decoration: none;
+      margin-bottom: 0.85rem;
+      transition: color 0.25s ease;
+      letter-spacing: 0.05em;
+    }
+    .footer-link:hover { color: var(--paper); }
+    .footer-email-input {
+      width: 100%;
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid rgba(250,248,245,0.15);
+      padding: 0.5rem 0;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.68rem;
+      color: var(--paper);
+      outline: none;
+      margin-bottom: 0.85rem;
+      transition: border-color 0.25s ease;
+    }
+    .footer-email-input::placeholder { color: var(--mid-grey); }
+    .footer-email-input:focus { border-bottom-color: var(--crimson); }
+    .footer-email-btn {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.58rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--crimson);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      transition: opacity 0.2s ease;
+    }
+    .footer-email-btn:hover { opacity: 0.65; }
+    .footer-bottom {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding-top: 1.75rem;
+      border-top: 1px solid #2a2728;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .footer-legal {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.52rem;
+      color: rgba(250,248,245,0.2);
+      letter-spacing: 0.1em;
+    }
+
+    /* ══ ANIMATION ═════════════════════════════════════ */
+    .will-animate { opacity: 0; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .will-animate { opacity: 1 !important; transform: none !important; }
+      .sticky-card  { transform: none !important; filter: none !important; }
+    }
+
+    /* ══ RESPONSIVE ════════════════════════════════════ */
+    @media (max-width: 900px) {
+      .articles-grid { grid-template-columns: 1fr; }
+      .footer-grid { grid-template-columns: 1fr 1fr; gap: 2rem; }
+    }
+    @media (max-width: 640px) {
+      #navbar { top: 0.85rem; padding: 0.6rem 1.25rem; }
+      .hero-content { padding: 2rem 1.5rem; }
+      .sticky-card[data-layer="ai"] .card-title   { font-size: 2rem; }
+      .sticky-card[data-layer="human"] .card-title { font-size: 2.2rem; }
+      .card-inner { padding: 2rem 1.5rem; }
+      .card-num-ornament { font-size: 6rem; }
+      .sommario-inner { padding: 3.5rem 1.5rem 0; }
+      .article-card { padding: 2rem 1.5rem; }
+      #manifesto { padding: 6rem 1.5rem; }
+      .manifesto-dramatic { font-size: 1.75rem; }
+      footer { padding: 3.5rem 1.5rem 2rem; }
+      .footer-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ══ A. NAVBAR ════════════════════════════════════ -->
+  <nav id="navbar" aria-label="Main navigation">
+    <div class="nav-brand">
+      <div class="nav-dot" aria-hidden="true"></div>
+      <a href="#hero" class="nav-logo">KANSEI</a>
+    </div>
+    <div class="nav-links">
+      <a href="#aperture" class="nav-link">This Issue</a>
+      <a href="#sommario" class="nav-link">AI Layer</a>
+      <a href="#sommario" class="nav-link">Human Layer</a>
+      <a href="#" class="nav-link">The Archive</a>
+    </div>
+    <button class="nav-hamburger" aria-label="Menu" aria-expanded="false">
+      <span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- ══ B. HERO ═════════════════════════════════════ -->
+  <section id="hero" aria-label="Cover">
+    <div class="hero-bg" role="img" aria-label="Dramatic server room"></div>
+    <div class="hero-overlay" aria-hidden="true"></div>
+    <div class="hero-content">
+      <span class="hero-issue will-animate">VOL. IV / NO. 12</span>
+      <h1>
+        <span class="hero-title-eyebrow will-animate">The Kinetic Shift</span>
+        <span class="hero-title-main will-animate">Editorial Intelligence</span>
+      </h1>
+      <span class="hero-meta will-animate">
+        6 articles &nbsp;·&nbsp; AI Layer &nbsp;·&nbsp; Human Layer &nbsp;·&nbsp; March 2026
+      </span>
+      <div class="hero-scroll will-animate" aria-label="Scroll down">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ C. STICKY CARDS — Featured Articles ═════════ -->
+  <section id="aperture" aria-label="Featured articles">
+
+    <!-- 01 · AI · Tokyo Infrastructure -->
+    <article class="sticky-card" data-layer="ai" aria-label="Article 01">
+      <div class="card-inner">
+        <span class="card-num-ornament" aria-hidden="true">01</span>
+        <div class="card-badge will-animate">
+          <span class="badge-dot"></span>AI Layer
+        </div>
+        <span class="card-author will-animate">Kaito Nakamoto</span>
+        <h2 class="card-title will-animate">The Kinetic Shift: Why Tokyo's Infrastructure is the Blueprint for 2030.</h2>
+        <p class="card-desc will-animate">
+          As global metropolises grapple with the demands of an increasingly digital workforce, Japan's capital offers a radical alternative: the seamless integration of kinetic architecture and AI-managed transit systems.
+        </p>
+        <hr class="card-rule will-animate" />
+        <a href="#" class="card-cta will-animate">
+          Read the Full Investigation
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </a>
+      </div>
+    </article>
+
+    <!-- 02 · Human · Decentralized State -->
+    <article class="sticky-card" data-layer="human" aria-label="Article 02">
+      <div class="card-inner">
+        <span class="card-num-ornament" aria-hidden="true">02</span>
+        <div class="card-badge will-animate">
+          <span class="badge-dot"></span>Human Layer
+        </div>
+        <span class="card-author will-animate">KANSEI Collective</span>
+        <h2 class="card-title will-animate">The Decentralized State: How Estonia Redefined Governance.</h2>
+        <p class="card-desc will-animate">
+          A look into the digital backbone of the world's most paperless society and what it means for privacy, sovereignty, and the future of citizen-state relations.
+        </p>
+        <hr class="card-rule will-animate" />
+        <a href="#" class="card-cta will-animate">
+          Read
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </a>
+      </div>
+    </article>
+
+    <!-- 03 · AI · Agile Failing -->
+    <article class="sticky-card" data-layer="ai" aria-label="Article 03">
+      <div class="card-inner">
+        <span class="card-num-ornament" aria-hidden="true">03</span>
+        <div class="card-badge will-animate">
+          <span class="badge-dot"></span>AI Layer
+        </div>
+        <span class="card-author will-animate">KANSEI / Data Desk</span>
+        <h2 class="card-title will-animate">The End of the Quarter: Why Agile is Failing the Boardroom.</h2>
+        <p class="card-desc will-animate">
+          Traditional hierarchies are making a quiet comeback in Silicon Valley as speed loses to stability. The data tells a story the industry doesn't want to hear.
+        </p>
+        <hr class="card-rule will-animate" />
+        <a href="#" class="card-cta will-animate">
+          Read
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </a>
+      </div>
+    </article>
+
+    <!-- 04 · Human · Silence as Luxury -->
+    <article class="sticky-card" data-layer="human" aria-label="Article 04">
+      <div class="card-inner">
+        <span class="card-num-ornament" aria-hidden="true">04</span>
+        <div class="card-badge will-animate">
+          <span class="badge-dot"></span>Human Layer
+        </div>
+        <span class="card-author will-animate">KANSEI Collective</span>
+        <h2 class="card-title will-animate">Silence as Luxury: The Architecture of Pure Auditory Space.</h2>
+        <p class="card-desc will-animate">
+          New luxury developments are prioritizing acoustic engineering over visual aesthetics. In an age of constant noise, the absence of sound is the ultimate design statement.
+        </p>
+        <hr class="card-rule will-animate" />
+        <a href="#" class="card-cta will-animate">
+          Read
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </a>
+      </div>
+    </article>
+
+  </section>
+
+  <!-- ══ D. ARTICLE GRID ═════════════════════════════ -->
+  <section id="sommario" aria-label="All articles">
+    <div class="sommario-inner">
+      <div class="section-header">
+        <span class="section-label">The Intelligence Report — All Articles</span>
+        <span class="section-label" style="opacity:.45;">Vol. IV / March 2026</span>
+      </div>
+    </div>
+    <div style="max-width:1200px; margin:0 auto; padding:0 3rem;">
+      <div class="articles-grid">
+
+        <article class="article-card will-animate" data-layer="ai">
+          <span class="article-num">05</span>
+          <div class="article-badge"><span class="badge-dot"></span>AI Layer</div>
+          <span class="article-author">KANSEI / Data Desk</span>
+          <h3 class="article-title">Hedge Funds Pivot Toward Sovereign Battery Reserves</h3>
+          <hr class="article-rule" />
+          <p class="article-desc">Economic analysts predict a 14% shift in raw material liquidity by Q3. Scandinavian reserves emerge as the new strategic asset class.</p>
+        </article>
+
+        <article class="article-card will-animate" data-layer="human">
+          <span class="article-num">06</span>
+          <div class="article-badge"><span class="badge-dot"></span>Human Layer</div>
+          <span class="article-author">KANSEI Collective</span>
+          <h3 class="article-title">The Brutalist Revival: Why 1970s Concrete is the New Luxury</h3>
+          <hr class="article-rule" />
+          <p class="article-desc">Architects in Berlin are stripping away glass facades to reveal raw structural truth. A meditation on permanence in a disposable era.</p>
+        </article>
+
+        <article class="article-card will-animate" data-layer="ai">
+          <span class="article-num">07</span>
+          <div class="article-badge"><span class="badge-dot"></span>AI Layer</div>
+          <span class="article-author">KANSEI / Data Desk</span>
+          <h3 class="article-title">AI Sentience or Sophisticated Plagiarism?</h3>
+          <hr class="article-rule" />
+          <p class="article-desc">A new philosophical framework suggests we are asking the wrong questions about silicon consciousness. The debate intensifies.</p>
+        </article>
+
+        <article class="article-card will-animate" data-layer="human">
+          <span class="article-num">08</span>
+          <div class="article-badge"><span class="badge-dot"></span>Human Layer</div>
+          <span class="article-author">Eliza Vance</span>
+          <h3 class="article-title">Intelligence is Perception, Not Processing</h3>
+          <hr class="article-rule" />
+          <p class="article-desc">In an age of constant noise, the depth of perception matters more than the speed of computation. An editorial on what we lose when we optimize for throughput.</p>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ E. MANIFESTO ════════════════════════════════ -->
+  <section id="manifesto" aria-label="Editorial note">
+    <div class="manifesto-inner">
+      <p class="manifesto-neutral">
+        The debate on AI is measured in funding rounds,
+        technical parameters, press releases.
+      </p>
+      <p class="manifesto-dramatic" id="manifesto-text" aria-live="polite"></p>
+      <p class="manifesto-num">Vol. IV &nbsp;·&nbsp; March 2026</p>
+    </div>
+  </section>
+
+  <!-- ══ F. FOOTER ═══════════════════════════════════ -->
+  <footer aria-label="Footer">
+    <div class="footer-grid">
+      <div>
+        <span class="footer-logo-text">KANSEI</span>
+        <span class="footer-logo-kanji">感性</span>
+        <p class="footer-tagline">Where data meets perception.</p>
+        <div class="footer-status">
+          <div class="nav-dot" style="width:5px;height:5px;" aria-hidden="true"></div>
+          KANSEI v1.0 — Live
+        </div>
+      </div>
+      <div>
+        <p class="footer-heading">Navigate</p>
+        <a href="#aperture" class="footer-link">Current Issue</a>
+        <a href="#" class="footer-link">The Archive</a>
+        <a href="#" class="footer-link">About</a>
+        <a href="#" class="footer-link">Contact</a>
+      </div>
+      <div>
+        <p class="footer-heading">Newsletter</p>
+        <input type="email" class="footer-email-input" placeholder="your email" aria-label="Subscribe to newsletter" />
+        <button class="footer-email-btn">Subscribe →</button>
+      </div>
+      <div>
+        <p class="footer-heading">Legal</p>
+        <a href="#" class="footer-link">Privacy Policy</a>
+        <a href="#" class="footer-link">Terms of Use</a>
+        <a href="#" class="footer-link">Cookies</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p class="footer-legal">© 2026 KANSEI Editorial Intelligence</p>
+      <p class="footer-legal">All rights reserved</p>
+    </div>
+  </footer>
+
+  <!-- ══ JAVASCRIPT — GSAP ═══════════════════════════ -->
+  <script>
+    gsap.registerPlugin(ScrollTrigger);
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    /* Manifesto words */
+    const manifestoEl = document.getElementById('manifesto-text');
+    const manifestoWords = [
+      { t: 'Intelligence', h: false },
+      { t: 'is', h: false },
+      { t: 'not', h: false },
+      { t: 'the', h: false },
+      { t: 'speed', h: true },
+      { t: 'of', h: false },
+      { t: 'processing,', h: false },
+      { t: 'but', h: false },
+      { t: 'the', h: false },
+      { t: 'depth', h: true },
+      { t: 'of', h: false },
+      { t: 'perception', h: false },
+      { t: 'in', h: false },
+      { t: 'an', h: false },
+      { t: 'age', h: false },
+      { t: 'of', h: false },
+      { t: 'constant', h: false },
+      { t: 'noise.', h: false },
+    ];
+    manifestoEl.innerHTML = manifestoWords
+      .map((w, i) => `<span class="manifesto-word${w.h ? ' manifesto-highlight' : ''}" data-idx="${i}">${w.t} </span>`)
+      .join('');
+
+    if (!prefersReduced) {
+      /* Hero entrance */
+      gsap.fromTo(
+        document.querySelectorAll('#hero .will-animate'),
+        { y: 44, opacity: 0 },
+        { y: 0, opacity: 1, duration: 1.1, stagger: 0.09, ease: 'power3.out', delay: 0.25 }
+      );
+
+      /* Sticky card entrances */
+      document.querySelectorAll('.sticky-card').forEach(card => {
+        gsap.fromTo(
+          card.querySelectorAll('.will-animate'),
+          { y: 32, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.85, stagger: 0.1, ease: 'power3.out',
+            scrollTrigger: { trigger: card, start: 'top 78%' } }
+        );
+      });
+
+      /* Sticky cards: scale + blur previous */
+      const stickyCards = document.querySelectorAll('.sticky-card');
+      stickyCards.forEach((card, i) => {
+        if (i === 0) return;
+        const prev = stickyCards[i - 1];
+        ScrollTrigger.create({
+          trigger: card,
+          start: 'top bottom',
+          end: 'top top',
+          scrub: true,
+          onUpdate: self => {
+            const p = self.progress;
+            gsap.set(prev, {
+              scale: 1 - p * 0.08,
+              filter: `blur(${p * 12}px)`,
+              opacity: 1 - p * 0.6,
+            });
+          },
+        });
+      });
+
+      /* Grid articles */
+      gsap.fromTo(
+        document.querySelectorAll('#sommario .will-animate'),
+        { y: 50, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.8, stagger: 0.12, ease: 'power3.out',
+          scrollTrigger: { trigger: '#sommario', start: 'top 80%' } }
+      );
+
+      /* Manifesto words */
+      const allWords = manifestoEl.querySelectorAll('.manifesto-word:not(.manifesto-highlight)');
+      const highlightWords = manifestoEl.querySelectorAll('.manifesto-word.manifesto-highlight');
+      gsap.fromTo(allWords, { y: 18, opacity: 0 },
+        { y: 0, opacity: 1, stagger: 0.04, duration: 0.55, ease: 'power3.out',
+          scrollTrigger: { trigger: '#manifesto', start: 'top 72%' } });
+      gsap.fromTo(highlightWords, { y: 18, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.7, ease: 'power3.out', delay: 0.22,
+          scrollTrigger: { trigger: '#manifesto', start: 'top 72%' } });
+    } else {
+      document.querySelectorAll('.will-animate').forEach(el => {
+        el.style.opacity = '1'; el.style.transform = 'none';
+      });
+    }
+
+    /* Navbar observer */
+    const navbar = document.getElementById('navbar');
+    new IntersectionObserver(
+      ([entry]) => navbar.classList.toggle('scrolled', !entry.isIntersecting),
+      { threshold: 0.06 }
+    ).observe(document.getElementById('hero'));
+  </script>
+
+</body>
+</html>
