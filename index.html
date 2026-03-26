@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KANSEI Magazine — Design Preview</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --ink: #181617; --crimson: #9A031E; --sky: #44A7D6;
+    --mid-grey: #ADADAD; --white: #FFFFFF;
+  }
+  body { font-family: 'DM Sans', sans-serif; background: var(--white); color: var(--ink); min-height: 100dvh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4rem 2rem; }
+  h1 { font-family: 'Cormorant Garamond', serif; font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 600; letter-spacing: -0.02em; margin-bottom: 0.5rem; }
+  .subtitle { font-family: 'IBM Plex Mono', monospace; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--mid-grey); margin-bottom: 3rem; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; width: 100%; max-width: 900px; }
+  a.card { text-decoration: none; color: var(--ink); border: 1px solid var(--ink); padding: 2rem; transition: background 0.2s, color 0.2s; }
+  a.card:hover { background: var(--ink); color: var(--white); }
+  a.card .label { font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 0.75rem; display: inline-block; }
+  a.card .label.ai { color: var(--crimson); }
+  a.card .label.human { color: var(--sky); }
+  a.card:hover .label { color: inherit; }
+  a.card h2 { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-weight: 600; margin-bottom: 0.5rem; }
+  a.card p { font-size: 0.85rem; color: var(--mid-grey); line-height: 1.5; }
+  a.card:hover p { color: var(--mid-grey); }
+</style>
+</head>
+<body>
+  <h1>KANSEI</h1>
+  <div class="subtitle">Design Preview — Stitch Pages</div>
+  <div class="grid">
+    <a class="card" href="stitch/home_kansei_editorial_updated_background/code.html">
+      <span class="label">Home</span>
+      <h2>Homepage</h2>
+      <p>Hero, sticky article cards, article grid, manifesto quote.</p>
+    </a>
+    <a class="card" href="stitch/article_kansei_editorial/code.html">
+      <span class="label human">Human Layer</span>
+      <h2>Article Editorial</h2>
+      <p>Long-form editorial with pull quotes, dropcap, related articles.</p>
+    </a>
+    <a class="card" href="stitch/article_kansei_lab/code.html">
+      <span class="label ai">AI Layer</span>
+      <h2>Article Lab</h2>
+      <p>Data-driven article with visualizations, methodology notes.</p>
+    </a>
+    <a class="card" href="stitch/curation_kansei_editorial_updated_background/code.html">
+      <span class="label">Curation</span>
+      <h2>Curation</h2>
+      <p>Curated picks with alternating layouts and newsletter CTA.</p>
+    </a>
+    <a class="card" href="stitch/the_wire_kansei_editorial_updated_background/code.html">
+      <span class="label ai">Live Feed</span>
+      <h2>The Wire</h2>
+      <p>Live news feed with breaking news, analysis, and updates.</p>
+    </a>
+  </div>
+</body>
+</html>
